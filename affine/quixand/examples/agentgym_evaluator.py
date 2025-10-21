@@ -21,7 +21,14 @@ MODEL = "openai/gpt-oss-120b"
 MODEL_NAME = "_".join(MODEL.split("/")) 
 SGLANG_PORT = 10000
 
-def test_evaluator_endpoint(sandbox):
+MIN_MAX_REWARD = {
+    "sciworld": (-100, 100)
+}
+
+def normalize_reward(reward, min_reward, max_reward):
+    return (reward - min_reward) / (max_reward - min_reward)
+
+def test_evaluator_endpoint(sandbox, env_name):
     ids = []
     rewards = []
     successes = []
@@ -57,7 +64,8 @@ def test_evaluator_endpoint(sandbox):
             for detail in response['details']:
                 
                 ids.append(detail['id'])
-                rewards.append(detail['reward'])
+                min_reward, max_reward = MIN_MAX_REWARD.get(env_name, (0, 1))
+                rewards.append(normalize_reward(detail['reward'], min_reward, max_reward))
                 successes.append(detail['success'])
                 try:
                     experiences.append(detail['experiences'])
@@ -101,7 +109,7 @@ def main():
         print(f"Container ID: {sandbox.container_id[:12]}\n")
 
         try:
-            ids, rewards, successes, experiences = test_evaluator_endpoint(sandbox)
+            ids, rewards, successes, experiences = test_evaluator_endpoint(sandbox, env_name)
 
             if ids and rewards and successes:
                 print("\n=== Test Summary ===")

@@ -119,7 +119,7 @@ def main():
             
             if not os.path.exists(f"results/{MODEL_NAME}"):
                 os.makedirs(f"results/{MODEL_NAME}")
-            with open(f"results/{MODEL_NAME}/agentgym_{env_name}_{MODEL_NAME}.json", "w") as f:
+            with open(f"results/{MODEL_NAME}/affine_{env_name}_{MODEL_NAME}.json", "w") as f:
                 json.dump(results, f, indent=2)
                 
         except Exception as e:
